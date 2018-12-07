@@ -5,45 +5,63 @@
 # '#3 @ 5,5: 2x2'
 # ]
 
+# input_array = [
+#   '#123 @ 3,2: 5x4'
+# ]
 
-input_array = [
-  '#123 @ 3,2: 5x4'
-]
+matrix = {}
 
-matrix = []
+# input_array.each do |input_string|
 
-find_at_sign = input_array[0].index('@')
-find_comma = input_array[0].index(',')
-find_colon = input_array[0].index(':')
-find_x = input_array[0].index('x')
-end_of_string = input_array[0].length
+File.open("input.txt").each do |input_string|
 
-left_edge = input_array[0][find_at_sign+1 .. find_comma-1].to_i + 1
-top_edge = input_array[0][find_comma+1 .. find_colon-1].to_i + 1
-width = input_array[0][find_colon+1 .. find_x-1].to_i
-height = input_array[0][find_x+1 .. end_of_string].to_i
+  find_at_sign = input_string.index('@')
+  find_comma = input_string.index(',')
+  find_colon = input_string.index(':')
+  find_x = input_string.index('x')
+  end_of_string = input_string.length
 
-right_edge = left_edge + width - 1
-bottom_edge = top_edge + height - 1
+  left_edge = input_string[find_at_sign+1 .. find_comma-1].to_i + 1
+  top_edge = input_string[find_comma+1 .. find_colon-1].to_i + 1
+  width = input_string[find_colon+1 .. find_x-1].to_i
+  height = input_string[find_x+1 .. end_of_string].to_i
 
-row_counter = 1
-while row_counter <= bottom_edge do
+  right_edge = left_edge + width - 1
+  bottom_edge = top_edge + height - 1
 
-  column_counter = 1
-  row_array = []
-  while column_counter <= right_edge do
+  row_counter = top_edge
+  while row_counter <= bottom_edge do
 
-    if row_counter >= top_edge and row_counter <= bottom_edge and
-       column_counter >= left_edge and column_counter <= right_edge
-      row_array << '#'
-    else
-      row_array << '.'
-    end #if
+    column_counter = left_edge
 
-    column_counter += 1
-  end #column_counter
-  matrix << row_array
-  row_counter += 1
-end  #row_counter
+    while column_counter <= right_edge do
 
-puts "#{matrix}"
+      if row_counter >= top_edge and row_counter <= bottom_edge and
+         column_counter >= left_edge and column_counter <= right_edge and
+         (matrix["#{column_counter},#{row_counter}"] == 1 or
+          matrix["#{column_counter},#{row_counter}"] == 0)
+        matrix["#{column_counter},#{row_counter}"] = 1
+      elsif row_counter >= top_edge and row_counter <= bottom_edge and
+            column_counter >= left_edge and column_counter <= right_edge and
+            (matrix["#{column_counter},#{row_counter}"] == "." or
+             matrix["#{column_counter},#{row_counter}"].nil?)
+        matrix["#{column_counter},#{row_counter}"] = 0
+      elsif matrix["#{column_counter},#{row_counter}"].nil?
+        matrix["#{column_counter},#{row_counter}"] = "."
+      end #if
+
+      column_counter += 1
+    end #column_counter
+
+    row_counter += 1
+  end  #row_counter
+
+end #each loop
+
+# puts "#{matrix}"
+
+values_array = matrix.values
+
+values_array.keep_if { |x| x == 1}
+
+puts "#{values_array.count}"
